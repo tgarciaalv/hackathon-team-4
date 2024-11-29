@@ -64,6 +64,9 @@ model_file_path = '/workspaces/hackathon-team-4/data/flight_delay_model.pkl'
 joblib.dump(model, model_file_path)
 print(f"Model saved to {model_file_path}")
 
+# Expose the data variable
+__all__ = ['data'] # Expose the data variable for use in the Flask app      
+
 # Example of loading the model and making a prediction
 # loaded_model = joblib.load(model_file_path)
 # new_data = pd.DataFrame({
