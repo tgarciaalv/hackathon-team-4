@@ -5,6 +5,7 @@
 # 3. Returns the list of airport names and IDs, sorted alphabetically.
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 import joblib
 import sys
@@ -17,6 +18,17 @@ from model import data
 
 app = Flask(__name__)
 
+# Enable CORS
+@app.after_request
+def after_request(response):
+    """
+    Enable CORS
+    """
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
+
 # Load the model
 model = joblib.load('/workspaces/hackathon-team-4/data/flight_delay_model.pkl')
 
@@ -24,8 +36,11 @@ model = joblib.load('/workspaces/hackathon-team-4/data/flight_delay_model.pkl')
 def index():
     return "Welcome to the Flight Delay Prediction API. Use /predict to get predictions and /airports to get the list of airports."
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'OPTIONS'])
 def predict():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
     content = request.json
     day_of_week = content['day_of_week']
     origin_airport_id = content['origin_airport_id']
